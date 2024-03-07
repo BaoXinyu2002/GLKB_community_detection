@@ -1,6 +1,6 @@
 # GLKB community detection Pipline
 ## Introduction
-This pipline aims to generate subgraphs 
+This pipline aims to find subgraphs that are gathered more closely in a graph. These subgraphs (i.e. communities) have a closer relationship than other part of the graph. The results are not only usful for recommanding related items but also important for graph learning.
 ## Usage
 ### Startup
 ### Preprocess
