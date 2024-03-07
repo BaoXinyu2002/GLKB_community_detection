@@ -2,12 +2,23 @@ import xml.etree.ElementTree as ET
 import csv
 import os
 import glob
+from pathlib import Path
+
+# Initialize the argument parser
+parser = argparse.ArgumentParser(description="Visualize subgraph.")
+# Add an argument for the input file path
+parser.add_argument("input_file", type=str, help="Path to the input id_label file")
+parser.add_argument("input_subgraph", type=str, help="Path to the input subgraph directory file")
+# Parse the command line arguments
+args = parser.parse_args()
 
 all_subgraphs_data = []
 rep_nodes=[]
 
-for graphml_file in glob.glob('/nfs/turbo/umms-drjieliu/usr/xinyubao/subgraph/Openai_DBSCAN_0.9_5/subgraph_*.graphml'):
-    tree = ET.parse(graphml_file)
+pathlist = Path(input_subgraph).rglob('*.graphml')
+for path in pathlist:
+    path_str = str(path)
+    tree = ET.parse(path_str)
     root = tree.getroot()
 
     namespaces = {'graphml': 'http://graphml.graphdrawing.org/xmlns'}
@@ -31,7 +42,8 @@ for graphml_file in glob.glob('/nfs/turbo/umms-drjieliu/usr/xinyubao/subgraph/Op
 
     all_subgraphs_data.append((nodes, edges))
 
-with open('/nfs/turbo/umms-drjieliu/usr/xinyubao/subgraph/Openai_DBSCAN_0.9_5/subgraphs_edges.csv', 'w', newline='') as csvfile:
+edges_path=input_subgraph+'subgraphs_edges.csv'
+with open(edges_path, 'w', newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
     csvwriter.writerow(['Node', 'Connected_Node'])
 
@@ -39,7 +51,8 @@ with open('/nfs/turbo/umms-drjieliu/usr/xinyubao/subgraph/Openai_DBSCAN_0.9_5/su
         for edge in edges:
             csvwriter.writerow([edge[0], edge[1]])
 
-with open('/nfs/turbo/umms-drjieliu/usr/xinyubao/subgraph/Openai_DBSCAN_0.9_5/subgraphs_rep_nodes.csv', 'w', newline='') as csvfile:
+nodes_path=input_subgraph+'subgraphs_rep_nodes.csv'
+with open(nodes_path, 'w', newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
     csvwriter.writerow(['Representative_Node_ID'])
     for rep_node_id in rep_nodes:

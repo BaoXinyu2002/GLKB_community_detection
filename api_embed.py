@@ -1,7 +1,17 @@
 import openai
 import pandas as pd
+import argparse
 
-openai.api_key = "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"
+# Initialize the argument parser
+parser = argparse.ArgumentParser(description="Get embeddings for texts.")
+# Add an argument for the input file path
+parser.add_argument("input_file", type=str, help="Path to the input id_label file")
+parser.add_argument("api_key", type=str, help="API key for embedding")
+parser.add_argument("output_file", type=str, help="Path to the output embedding file")
+# Parse the command line arguments
+args = parser.parse_args()
+
+openai.api_key = api_key
 
 def get_embedding(texts, model="text-embedding-3-small"):
     texts = [str(text).replace("\n", " ") for text in texts]
@@ -9,7 +19,7 @@ def get_embedding(texts, model="text-embedding-3-small"):
     embeddings = [embedding['embedding'] for embedding in response['data']]
     return embeddings
 
-df = pd.read_csv("/nfs/turbo/umms-drjieliu/usr/xinyubao/subgraph/id_label_2.csv")
+df = pd.read_csv(input_file)
 
 batch_size = 1000
 
@@ -32,4 +42,4 @@ for i in range(0, len(df), batch_size):
 embeddings_df = pd.DataFrame(all_embeddings)
 embeddings_df['id'] = all_ids
 
-embeddings_df.to_csv("embeddings_with_ids2.csv", index=False)
+embeddings_df.to_csv(output_file, index=False)
